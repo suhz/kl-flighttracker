@@ -29,8 +29,9 @@ export function loadAirlinesData(): AirlinesData {
   try {
     const dataPath = path.join(process.cwd(), 'data', 'airlines.json');
     const rawData = fs.readFileSync(dataPath, 'utf-8');
-    airlinesData = JSON.parse(rawData);
-    return airlinesData;
+    const parsedData = JSON.parse(rawData);
+    airlinesData = parsedData;
+    return parsedData;
   } catch (error) {
     console.warn('⚠️  Airlines data not found, using fallback mapping');
     return {

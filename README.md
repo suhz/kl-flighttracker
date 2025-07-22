@@ -11,8 +11,97 @@ Real-time aircraft tracking dashboard with statistics, charts, and live data fro
 - **Country Detection**: Accurate country identification using ICAO hex code ranges
 - **Airline Mapping**: Full airline names from OpenFlights database
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Dark Mode**: Full dark mode support with theme selector
+- **Aircraft Coordinates**: Clickable coordinates with Google Maps integration
 
-## Quick Start
+## Quick Start with Docker (Recommended)
+
+### Prerequisites
+- Docker and Docker Compose installed
+- Ultrafeeder/tar1090 running and accessible
+
+### 1. Clone and Setup
+```bash
+git clone <repository-url>
+cd adsb-dashboard
+```
+
+### 2. Configure Environment
+```bash
+cp env.example .env
+```
+
+Edit `.env` with your Ultrafeeder settings:
+```env
+DATABASE_URL="file:./data/aircraft.db"
+ULTRAFEEDER_HOST="http://YOUR_ULTRAFEEDER_IP:8080"
+POLL_INTERVAL=30000
+DATA_RETENTION_DAYS=30
+NODE_ENV=production
+PORT=3000
+```
+
+### 3. Create Data Directory
+```bash
+mkdir -p data
+```
+
+### 4. Start with Docker Compose
+```bash
+# Start both dashboard and collector
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Check status
+docker compose ps
+```
+
+### 5. Access Dashboard
+Open your browser and visit: `http://localhost:3000`
+
+## Docker Options
+
+### Run Both Services (Dashboard + Collector)
+```bash
+docker compose up -d
+```
+
+### Run Dashboard Only
+```bash
+docker compose -f docker-compose.dashboard.yml up -d
+```
+
+### Run Collector Only
+```bash
+docker compose up collector -d
+```
+
+### View Logs
+```bash
+# All services
+docker compose logs -f
+
+# Dashboard only
+docker compose logs -f dashboard
+
+# Collector only
+docker compose logs -f collector
+```
+
+### Stop Services
+```bash
+docker compose down
+```
+
+### Rebuild and Restart
+```bash
+docker compose down
+docker compose up -d --build
+```
+
+## Manual Setup (Alternative)
 
 1. **Clone and install dependencies:**
    ```bash
@@ -62,11 +151,18 @@ Create a `.env` file based on `env.example`:
 ```env
 DATABASE_URL="file:./data/aircraft.db"
 ULTRAFEEDER_HOST="http://192.168.1.50:8080"
-POLL_INTERVAL=10
+POLL_INTERVAL=30000
 DATA_RETENTION_DAYS=30
-NODE_ENV=development
+NODE_ENV=production
 PORT=3000
 ```
+
+### Docker Configuration
+
+The project includes multiple Docker Compose files:
+
+- `docker-compose.yml` - Full setup (dashboard + collector)
+- `docker-compose.dashboard.yml` - Dashboard only
 
 ### Data Sources
 
@@ -130,14 +226,14 @@ curl http://localhost:3000/api/health
 ### Data Collection
 
 The collector runs continuously and:
-- Fetches data from Ultrafeeder every 10 seconds
+- Fetches data from Ultrafeeder every 30 seconds (configurable)
 - Saves aircraft sightings to SQLite database
 - Prevents duplicate entries
 - Handles connection errors gracefully
 
 ### Logs
 
-- **Collector logs**: Check terminal output
+- **Collector logs**: Check terminal output or `docker compose logs collector`
 - **Airlines updates**: `logs/airlines-update.log`
 - **Database**: `data/aircraft.db`
 
@@ -187,10 +283,14 @@ StatsSnapshot {
 
 ## Deployment
 
-### Docker
+### Docker (Recommended)
 
 ```bash
-docker-compose up -d
+# Full deployment
+docker compose up -d
+
+# Dashboard only
+docker compose -f docker-compose.dashboard.yml up -d
 ```
 
 ### Manual Deployment
@@ -212,6 +312,13 @@ docker-compose up -d
 
 ## Troubleshooting
 
+### Docker Issues
+
+1. **Container restarting**: Check logs with `docker compose logs collector`
+2. **Database permission errors**: Run `docker compose exec dashboard chown -R nextjs:nodejs /app/data`
+3. **Build failures**: Ensure Docker has enough memory and disk space
+4. **Port conflicts**: Change port in docker-compose.yml if 3000 is in use
+
 ### Common Issues
 
 1. **No data appearing**: Check Ultrafeeder connection and collector logs
@@ -224,6 +331,7 @@ docker-compose up -d
 - **Collector**: Check terminal output for connection issues
 - **Database**: Use SQLite browser to inspect data
 - **API**: Test endpoints with curl or browser dev tools
+- **Docker logs**: `docker compose logs -f [service-name]`
 
 ## Contributing
 
