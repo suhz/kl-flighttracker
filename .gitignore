@@ -1,0 +1,247 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Production
+/build
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+data/
+*.db-journal
+
+# ADS-B Dashboard Specific Files
+data/
+aircraft.db
+aircraft.db-journal
+collector.log
+collector-*.log
+aircraft-data/
+ultrafeeder-cache/
+tar1090-cache/
+adsb-data/
+flight-data/
+airline-data/
+aircraft-sightings/
+stats-cache/
+hourly-stats/
+country-stats/
+airline-stats/
+aircraft-types/
+airlines.json
+airlines-cache.json
+airlines-backup.json
+aircraft-registry.json
+icao-hex-ranges.json
+country-flags.json
+emergency-squawks.json
+flight-patterns.json
+aircraft-history.json
+sightings-archive/
+backup-data/
+temp-data/
+cache/
+logs/
+*.aircraft
+*.sightings
+*.flights
+*.stats
+*.cache
+*.backup
+*.archive
+*.temp
+*.tmp
+
+# Collector specific
+collector/
+collector-data/
+collector-logs/
+collector-cache/
+collector-backup/
+ultrafeeder/
+tar1090/
+dump1090/
+dump1090-data/
+dump1090-logs/
+dump1090-cache/
+
+# API cache and temporary files
+api-cache/
+api-temp/
+api-logs/
+api-backup/
+
+# Chart and visualization cache
+chart-cache/
+chart-temp/
+chart-data/
+visualization-cache/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Prisma
+prisma/migrations/
+.env
+
+# Docker
+.dockerignore
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Test files
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional: Uncomment if you want to ignore specific project files
+# .env.local
+# .env.production
+# .env.staging 

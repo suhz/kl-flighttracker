@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AircraftSighting {
+  id           Int      @id @default(autoincrement())
+  hex          String   // Aircraft ICAO identifier
+  flight       String?  // Flight number/callsign
+  registration String?  // Aircraft registration
+  aircraftType String?  // Aircraft type (A320, B737, etc.)
+  airline      String?  // Extracted from flight prefix
+  country      String?  // From registration prefix
+  countryCode  String?  // Country code (MY, SG, etc.)
+  altitude     Int?     // Altitude in feet
+  groundSpeed  Float?   // Ground speed
+  distance     Float?   // Distance from receiver (km)
+  rssi         Float?   // Signal strength
+  lat          Float?   // Latitude
+  lon          Float?   // Longitude
+  squawk       String?  // Transponder code
+  seenAt       DateTime // When aircraft was seen
+  createdAt    DateTime @default(now())
+  
+  @@index([seenAt])
+  @@index([hex])
+  @@index([flight])
+  @@index([aircraftType])
+  @@index([country])
+  @@index([airline])
+}
+
+model StatsSnapshot {
+  id                 Int      @id @default(autoincrement())
+  aircraftWithPos    Int
+  aircraftWithoutPos Int
+  messagesTotal      Int
+  maxDistance        Float?
+  snapshotAt         DateTime
+  createdAt          DateTime @default(now())
+  
+  @@index([snapshotAt])
+} 

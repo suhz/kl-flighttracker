@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  dashboard:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=file:./data/aircraft.db
+      - ULTRAFEEDER_HOST=http://192.168.1.50:8080
+      - POLL_INTERVAL=30000
+      - DATA_RETENTION_DAYS=30
+      - NODE_ENV=production
+    restart: unless-stopped
+
+volumes:
+  data:
+    driver: local 
