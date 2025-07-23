@@ -20958,5 +20958,55 @@
     "callsign": "FEDEX",
     "country": "United States",
     "active": true
+  },
+  "BTK": {
+    "id": 60000,
+    "name": "Batik Air Indonesia",
+    "alias": "",
+    "iata": "OD",
+    "icao": "BTK",
+    "callsign": "BATIK",
+    "country": "Indonesia",
+    "active": true
+  },
+  "CLX": {
+    "id": 60001,
+    "name": "Cargolux",
+    "alias": "",
+    "iata": "CV",
+    "icao": "CLX",
+    "callsign": "CARGOLUX",
+    "country": "Luxembourg",
+    "active": true
+  },
+  "KTC": {
+    "id": 60002,
+    "name": "AirAsia Cambodia",
+    "alias": "",
+    "iata": "KT",
+    "icao": "KTC",
+    "callsign": "CAMBODIA ASIA",
+    "country": "Cambodia",
+    "active": true
+  },
+  "RMY": {
+    "id": 60003,
+    "name": "Raya Airways",
+    "alias": "",
+    "iata": "TH",
+    "icao": "RMY",
+    "callsign": "RAYA",
+    "country": "Malaysia",
+    "active": true
+  },
+  "EXV": {
+    "id": 60004,
+    "name": "FitsAir",
+    "alias": "",
+    "iata": "FQ",
+    "icao": "EXV",
+    "callsign": "FITSAIR",
+    "country": "Armenia",
+    "active": true
   }
 }
