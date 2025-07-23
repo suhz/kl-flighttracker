@@ -243,8 +243,19 @@ export function getCountryFromRegistration(registration: string): CountryInfo {
 
 export function extractAirlineFromFlight(flight: string): string {
   if (!flight) return 'Unknown';
-  const match = flight.trim().match(/^([A-Z]{2,3})/);
-  return match ? match[1] : 'Unknown';
+  
+  const cleanFlight = flight.trim().toUpperCase();
+  
+  // First, try to match longer government/special callsigns (confirmed codes only)
+  const governmentMatch = cleanFlight.match(/^(POLIS|BOMBA|APMM|MMEA|TUDM|RMAF|PUTRA|TLDM|RSAF|RTAF|JASDF|RAAF|RZNAF)/);
+  
+  if (governmentMatch) {
+    return governmentMatch[1];
+  }
+  
+  // Fall back to standard 2-3 character airline codes
+  const standardMatch = cleanFlight.match(/^([A-Z]{2,3})/);
+  return standardMatch ? standardMatch[1] : 'Unknown';
 }
 
 // Legacy registration prefixes (keeping for backward compatibility)

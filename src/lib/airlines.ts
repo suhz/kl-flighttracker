@@ -12,12 +12,8 @@ interface Airline {
   active: boolean;
 }
 
-interface AirlinesData {
-  lastUpdated: string;
-  totalAirlines: number;
-  airlines: Airline[];
-  lookup: Record<string, Airline>;
-}
+// Simplified structure - just the lookup object
+type AirlinesData = Record<string, Airline>;
 
 let airlinesData: AirlinesData | null = null;
 
@@ -31,15 +27,14 @@ export function loadAirlinesData(): AirlinesData {
     const rawData = fs.readFileSync(dataPath, 'utf-8');
     const parsedData = JSON.parse(rawData);
     airlinesData = parsedData;
+    console.log(`✅ Loaded ${Object.keys(parsedData).length} airline codes from database`);
     return parsedData;
   } catch (error) {
-    console.warn('⚠️  Airlines data not found, using fallback mapping');
-    return {
-      lastUpdated: new Date().toISOString(),
-      totalAirlines: 0,
-      airlines: [],
-      lookup: {}
-    };
+    console.error('❌ Failed to load airlines database:', error);
+    // Return empty structure instead of fallback
+    const emptyData: AirlinesData = {};
+    airlinesData = emptyData;
+    return emptyData;
   }
 }
 
@@ -47,44 +42,21 @@ export function getAirlineName(code: string): string {
   if (!code) return 'Unknown';
   
   const data = loadAirlinesData();
-  const airline = data.lookup[code.toUpperCase()];
+  const airline = data[code.toUpperCase()];
   
   if (airline) {
     return airline.name;
   }
   
-  // Fallback to common airlines if data not available
-  const fallbackAirlines: Record<string, string> = {
-    'AXM': 'AirAsia',
-    'MAS': 'Malaysia Airlines',
-    'SIA': 'Singapore Airlines',
-    'MXD': 'Malindo Air',
-    'UAE': 'Emirates',
-    'TGW': 'Tiger Airways',
-    'XAX': 'AirAsia X',
-    'QTR': 'Qatar Airways',
-    'CES': 'China Eastern Airlines',
-    'IGO': 'IndiGo',
-    'AK': 'AirAsia',
-    'MH': 'Malaysia Airlines',
-    'SQ': 'Singapore Airlines',
-    'OD': 'Malindo Air',
-    'EK': 'Emirates',
-    'TR': 'Tiger Airways',
-    'D7': 'AirAsia X',
-    'QR': 'Qatar Airways',
-    'MU': 'China Eastern Airlines',
-    '6E': 'IndiGo'
-  };
-  
-  return fallbackAirlines[code.toUpperCase()] || code;
+  // Return the code itself if not found in our database
+  return code;
 }
 
 export function getAirlineInfo(code: string): { name: string; country: string } {
   if (!code) return { name: 'Unknown', country: 'Unknown' };
   
   const data = loadAirlinesData();
-  const airline = data.lookup[code.toUpperCase()];
+  const airline = data[code.toUpperCase()];
   
   if (airline) {
     return {
@@ -102,6 +74,6 @@ export function getAirlineInfo(code: string): { name: string; country: string } 
 }
 
 export function getLastUpdated(): string {
-  const data = loadAirlinesData();
-  return data.lastUpdated;
+  // Since we removed lastUpdated, return current date
+  return new Date().toISOString();
 } 

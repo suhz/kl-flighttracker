@@ -10,8 +10,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "collector": "tsx src/collector/index.ts",
-    "fetch-airlines": "node scripts/fetch-airlines.js"
+    "collector": "tsx src/collector/index.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.6.0",
