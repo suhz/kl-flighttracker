@@ -59,11 +59,14 @@ wait_for_containers() {
     fi
 }
 
-# Update airlines data
-update_airlines() {
-    print_status "Updating airlines data..."
-    docker compose exec dashboard npm run fetch-airlines
-    print_success "Airlines data updated"
+# Verify airlines data
+verify_airlines() {
+    print_status "Verifying airlines data..."
+    if [ -f "data/airlines.json" ]; then
+        print_success "Airlines data is available (curated database)"
+    else
+        print_warning "Airlines data not found, using fallback"
+    fi
 }
 
 # Show status
@@ -90,7 +93,7 @@ main() {
     stop_containers
     rebuild_containers
     wait_for_containers
-    update_airlines
+    verify_airlines
     show_status
 }
 

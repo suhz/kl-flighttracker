@@ -60,8 +60,8 @@ docker compose up -d --build
 # Initialize database
 docker compose exec collector npx prisma db push
 
-# Fetch airlines data
-docker compose exec dashboard npm run fetch-airlines
+# Airlines data is included (curated database)
+# No additional setup required
 ```
 
 ### 4. Access Dashboard
@@ -109,13 +109,10 @@ docker compose down
 docker compose up -d --build
 ```
 
-### Fetch Airlines Data
+### Migrate Airlines Data
 ```bash
-# Option 1: Direct command
-docker compose exec dashboard npm run fetch-airlines
-
-# Option 2: Using the convenience script
-./docker-fetch-airlines.sh
+# If you have existing data with airline names, migrate to codes:
+docker compose exec dashboard node scripts/migrate-airline-data.js
 ```
 
 ### Update Installation
@@ -147,10 +144,9 @@ docker compose up -d --build
    npm run db:push
    ```
 
-4. **Fetch airlines data:**
-   ```bash
-   npm run fetch-airlines
-   ```
+4. **Airlines data is included (curated database)**
+   - No additional setup required
+   - Run migration if you have existing data:
 
 5. **Start the collector (in background):**
    ```bash
@@ -192,30 +188,25 @@ The project includes multiple Docker Compose files:
 ### Data Sources
 
 - **Ultrafeeder/tar1090**: Aircraft tracking data via HTTP API
-- **OpenFlights**: Airline database for accurate airline names
+- **Curated Airlines Database**: Comprehensive airline database for accurate names
 - **ICAO Hex Ranges**: Country detection using official ICAO assignments
 
 ## Airlines Data Management
 
-The dashboard uses the [OpenFlights airlines database](https://raw.githubusercontent.com/jpatokal/openflights/master/data/airlines.dat) to provide accurate airline names instead of just codes.
+The dashboard uses a curated airlines database stored in `data/airlines.json` to provide accurate airline names instead of just codes. This includes:
 
-### Manual Update
+- Major international airlines (Air France, British Airways, Lufthansa, etc.)
+- Regional airlines and low-cost carriers
+- Cargo airlines (FedEx, DHL, etc.)  
+- Malaysian government aircraft (with Malay names)
+
+### Data Migration
+
+If you have existing data with airline names stored in the database, migrate to the new code-based system:
 
 ```bash
-npm run fetch-airlines
-```
-
-### Automated Updates
-
-Set up a daily cron job to keep airlines data current:
-
-```bash
-# Run the setup script (macOS/Linux)
-chmod +x scripts/setup-cron.sh
-./scripts/setup-cron.sh
-
-# Or manually add to crontab
-0 2 * * * cd /path/to/adsb-dashboard && npm run fetch-airlines >> logs/airlines-update.log 2>&1
+# Run the migration script
+docker compose exec dashboard node scripts/migrate-airline-data.js
 ```
 
 ### Data Structure
@@ -348,7 +339,7 @@ docker compose -f docker-compose.dashboard.yml up -d
 
 1. **No data appearing**: Check Ultrafeeder connection and collector logs
 2. **Database errors**: Run `npm run db:push` to sync schema
-3. **Airline codes only**: Run `npm run fetch-airlines` to get airline names
+3. **Airline codes only**: Check that `data/airlines.json` exists and run migration if needed
 4. **Performance issues**: Check data retention settings and database size
 
 ### Logs and Debugging

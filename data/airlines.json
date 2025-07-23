@@ -1990,13 +1990,13 @@
     "active": true
   },
   "WW": {
-    "id": 1441,
-    "name": "bmibaby",
-    "alias": "\\N",
+    "id": 90015,
+    "name": "MJets Air",
+    "alias": "MJets",
     "iata": "WW",
-    "icao": "BMI",
-    "callsign": "BABY",
-    "country": "United Kingdom",
+    "icao": "KXP",
+    "callsign": "EMJET",
+    "country": "Malaysia",
     "active": true
   },
   "CH": {
@@ -20949,14 +20949,14 @@
     "country": "Malaysia",
     "active": true
   },
-  "WW": {
-    "id": 90015,
-    "name": "MJets Air",
-    "alias": "MJets",
-    "iata": "WW",
-    "icao": "KXP",
-    "callsign": "EMJET",
-    "country": "Malaysia",
+  "FDX": {
+    "id": 50008,
+    "name": "FedEx",
+    "alias": "",
+    "iata": "FX",
+    "icao": "FDX",
+    "callsign": "FEDEX",
+    "country": "United States",
     "active": true
   }
 }

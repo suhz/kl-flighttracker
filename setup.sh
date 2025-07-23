@@ -120,27 +120,15 @@ init_database() {
     print_success "Database initialized"
 }
 
-# Fetch airlines data
-fetch_airlines() {
-    print_status "Fetching airlines data..."
+# Verify airlines data
+verify_airlines() {
+    print_status "Verifying airlines data..."
     
-    # Wait a bit for the collector to be ready
-    sleep 5
-    
-    # Run airlines fetch as root to avoid permission issues
-    if docker compose exec -u root dashboard npm run fetch-airlines; then
-        # Set proper permissions after successful fetch
-        docker compose exec -u root dashboard chown nextjs:nodejs /app/data/airlines.json 2>/dev/null || true
-        docker compose exec -u root dashboard chmod 664 /app/data/airlines.json 2>/dev/null || true
+    if [ -f "data/airlines.json" ]; then
+        print_success "Airlines data is available (curated database)"
     else
-        print_warning "Dashboard fetch failed, trying with collector..."
-        # Fallback: use collector container (which runs as root)
-        docker compose exec collector npm run fetch-airlines || {
-            print_warning "Airlines fetch failed, but dashboard will use fallback data"
-        }
+        print_warning "Airlines data not found, but it will be initialized automatically"
     fi
-    
-    print_success "Airlines data setup completed"
 }
 
 # Show status and next steps
@@ -166,7 +154,7 @@ show_status() {
     echo "===================="
     echo "• View logs: docker compose logs -f"
     echo "• Restart: docker compose restart"
-    echo "• Update airlines: docker compose exec dashboard npm run fetch-airlines"
+    echo "• Run migration: docker compose exec dashboard node scripts/migrate-airline-data.js"
     echo "• Rebuild: docker compose up -d --build"
     echo ""
 }
@@ -182,7 +170,7 @@ main() {
     start_containers
     wait_for_containers
     init_database
-    fetch_airlines
+    verify_airlines
     show_status
     
     echo ""
