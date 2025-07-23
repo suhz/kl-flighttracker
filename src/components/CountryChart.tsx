@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTimeRange } from '@/contexts/TimeRangeContext'
-import { ICAO_HEX_RANGES } from '@/lib/countries'
+import { getCountryFlag } from '@/lib/countryFlags'
 
 interface CountryData {
   country: string;
@@ -35,11 +35,7 @@ export function CountryChart() {
   const displayedData = showAll ? data : data.slice(0, 10)
   const hasMore = data.length > 10
 
-  const getCountryFlag = (countryName: string) => {
-    // Find the country in the ICAO_HEX_RANGES
-    const countryInfo = ICAO_HEX_RANGES.find(range => range.country === countryName)
-    return countryInfo?.flag || '🌍'
-  }
+
 
   if (loading) {
     return (

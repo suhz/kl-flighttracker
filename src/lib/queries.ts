@@ -2,7 +2,7 @@ import { prisma } from './db'
 import { DashboardStats } from '@/types/aircraft'
 import { subDays, subHours, subWeeks, subMonths } from 'date-fns'
 import { REGISTRATION_PREFIXES, ICAO_HEX_RANGES } from './countries'
-import { getAirlineName } from './airlines'
+import { getAirlineName, getAirlineInfo } from './airlines'
 
 // Helper function to get cutoff date based on time range
 function getCutoffDate(timeRange: string) {
@@ -209,11 +209,15 @@ export async function getTopAirlines(limit = 50, timeRange = '1w') {
   
   // Convert to array and sort
   const results = Object.entries(airlineCounts)
-    .map(([airlineCode, count]) => ({ 
-      airline: getAirlineName(airlineCode), 
-      airlineCode: airlineCode,
-      count 
-    }))
+    .map(([airlineCode, count]) => {
+      const airlineInfo = getAirlineInfo(airlineCode)
+      return { 
+        airline: airlineInfo.name, 
+        airlineCode: airlineCode,
+        country: airlineInfo.country,
+        count 
+      }
+    })
     .sort((a, b) => b.count - a.count)
     .slice(0, limit)
   
@@ -222,6 +226,7 @@ export async function getTopAirlines(limit = 50, timeRange = '1w') {
   return results.map(item => ({
     airline: item.airline,
     airlineCode: item.airlineCode,
+    country: item.country,
     count: item.count,
     percentage: (item.count / total) * 100
   }))
