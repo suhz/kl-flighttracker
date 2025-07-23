@@ -26,6 +26,8 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/tsconfig.json ./
 RUN npx prisma generate
+# Ensure source files are readable by the nextjs user
+RUN chown -R nextjs:nodejs /app/src
 USER nextjs
 EXPOSE 3000
 ENV PORT 3000
