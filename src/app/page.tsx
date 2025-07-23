@@ -6,6 +6,7 @@ import { StatsCardsClient } from '@/components/StatsCardsClient'
 import { ChartsWrapper } from '@/components/ChartsWrapper'
 import { TimeRangeProvider } from '@/contexts/TimeRangeContext'
 import { ThemeSelector } from '@/components/ThemeSelector'
+import { LastUpdated } from '@/components/LastUpdated'
 import Link from 'next/link'
 
 export default function HomePage() {
@@ -38,10 +39,12 @@ export default function HomePage() {
           <Suspense fallback={<div>Loading charts...</div>}>
             <ChartsWrapper />
           </Suspense>
+          <LastUpdated className="text-right mb-4" />
 
           <Suspense fallback={<div>Loading current aircraft...</div>}>
             <CurrentAircraftWrapper />
           </Suspense>
+          <LastUpdated className="text-right mt-2" />
         </div>
       </div>
     </TimeRangeProvider>

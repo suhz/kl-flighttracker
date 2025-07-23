@@ -30,7 +30,7 @@ export function StatsCards({ stats, timeRange, onTimeRangeChange }: StatsCardsPr
     },
     {
       value: formatNumber(stats.countries),
-      label: 'Aircraft Country',
+      label: 'Reg. Country',
       color: 'bg-orange-600',
       icon: '🌍'
     },

@@ -28,7 +28,16 @@ export function AircraftTypeChart() {
       }
     }
 
+    // Initial fetch
     fetchData()
+
+    // Set up auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchData()
+    }, 30000)
+
+    // Cleanup interval on unmount or timeRange change
+    return () => clearInterval(interval)
   }, [timeRange])
 
   const displayedData = showAll ? data : data.slice(0, 10)
