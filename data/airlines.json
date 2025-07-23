@@ -21008,5 +21008,15 @@
     "callsign": "FITSAIR",
     "country": "Armenia",
     "active": true
+  },
+  "CTV": {
+    "id": 60010,
+    "name": "Citilink",
+    "alias": "",
+    "iata": "QG",
+    "icao": "CTV",
+    "callsign": "SUPERGREEN",
+    "country": "Indonesia",
+    "active": true
   }
 }
