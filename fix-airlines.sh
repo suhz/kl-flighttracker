@@ -24,22 +24,32 @@ print_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
-print_status "Ensuring data directory has proper permissions..."
-docker compose exec dashboard chown -R nextjs:nodejs /app/data/ 2>/dev/null || {
-    print_warning "Could not change ownership (might be running as different user)"
-}
+print_status "Running airlines fetch as root user to avoid permission issues..."
 
-print_status "Creating airlines.json file with proper permissions..."
-docker compose exec dashboard touch /app/data/airlines.json
-docker compose exec dashboard chmod 664 /app/data/airlines.json
-
-print_status "Fetching airlines data..."
-if docker compose exec dashboard npm run fetch-airlines; then
+# Run the fetch command as root user (like we do with collector)
+if docker compose exec -u root dashboard npm run fetch-airlines; then
     print_success "Airlines data fetched successfully!"
+    
+    print_status "Setting proper file permissions..."
+    # After successful fetch, set proper permissions
+    docker compose exec -u root dashboard chown nextjs:nodejs /app/data/airlines.json 2>/dev/null || true
+    docker compose exec -u root dashboard chmod 664 /app/data/airlines.json 2>/dev/null || true
+    
 else
-    print_warning "Airlines fetch failed. Check the logs:"
-    docker compose logs dashboard --tail 10
+    print_warning "Airlines fetch failed. Trying alternative approach..."
+    
+    # Alternative: use collector container (which runs as root)
+    print_status "Trying with collector container..."
+    if docker compose exec collector npm run fetch-airlines; then
+        print_success "Airlines data fetched via collector!"
+    else
+        print_warning "Both attempts failed. Check the logs:"
+        docker compose logs dashboard --tail 10
+        exit 1
+    fi
 fi
 
-print_status "Checking final permissions..."
-docker compose exec dashboard ls -la /app/data/airlines.json 
+print_status "Checking final result..."
+docker compose exec dashboard ls -la /app/data/airlines.json 2>/dev/null || {
+    print_warning "airlines.json file not found, but this might be OK if the fetch succeeded"
+} 
