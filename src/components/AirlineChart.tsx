@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useTimeRange } from '@/contexts/TimeRangeContext'
-import { getAirlineCountryFlag } from '@/lib/countryFlags'
 
 interface AirlineData {
   airline: string;
@@ -66,9 +65,6 @@ export function AirlineChart() {
             <div key={index} className="flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
               <div className="flex items-center">
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-6">{index + 1}</span>
-                <span className="mr-2" title={`${item.country || 'Unknown country'}`}>
-                  {getAirlineCountryFlag(item.country || 'Unknown')}
-                </span>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-gray-900 dark:text-white">{item.airline || 'Unknown'}</span>
                   {item.airlineCode && item.airlineCode !== item.airline && (
