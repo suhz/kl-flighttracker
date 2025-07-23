@@ -76,14 +76,18 @@ export function AirlineChart() {
         <div>
           {displayedData.map((item, index) => (
             <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 min-h-[32px]">
-              <div className="flex items-center">
+              <div className="flex items-center gap-3">
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-6">{index + 1}</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {item.airlineCode && item.airlineCode !== item.airline 
-                    ? `${item.airlineCode} - ${item.airline || 'Unknown'}`
-                    : item.airline || 'Unknown'
-                  }
-                </span>
+                <div className="flex items-center gap-2">
+                  {item.airlineCode && item.airlineCode !== item.airline && (
+                    <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 w-10">
+                      {item.airlineCode}
+                    </span>
+                  )}
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    {item.airline || 'Unknown'}
+                  </span>
+                </div>
               </div>
               <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">{item.count}</span>
             </div>
