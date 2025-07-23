@@ -28,6 +28,8 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/tsconfig.json ./
 COPY --from=builder /app/scripts ./scripts
+# Verify source files exist
+RUN ls -la /app/src/collector/
 # Generate Prisma client in runner stage
 RUN npx prisma generate
 # Ensure source files are readable by the nextjs user

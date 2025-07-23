@@ -20,6 +20,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./src:/app/src:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
     environment:
       - DATABASE_URL=file:/app/data/aircraft.db
       - ULTRAFEEDER_HOST=http://192.168.1.50:8080
