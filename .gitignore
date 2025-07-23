@@ -127,33 +127,6 @@ data/
 
 # ADS-B Dashboard Specific Files
 data/
-aircraft.db
-aircraft.db-journal
-collector.log
-collector-*.log
-aircraft-data/
-ultrafeeder-cache/
-tar1090-cache/
-adsb-data/
-flight-data/
-airline-data/
-aircraft-sightings/
-stats-cache/
-hourly-stats/
-country-stats/
-airline-stats/
-airlines.json
-airlines-cache.json
-airlines-backup.json
-aircraft-registry.json
-icao-hex-ranges.json
-country-flags.json
-emergency-squawks.json
-flight-patterns.json
-aircraft-history.json
-sightings-archive/
-backup-data/
-temp-data/
 cache/
 logs/
 *.aircraft

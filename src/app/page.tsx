@@ -18,7 +18,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">KL FlightTracker</h1>
-                <p className="text-gray-600 dark:text-gray-300">Real-time aircraft detected by Suhaimi Amir’s ADS-B receiver in Kuala Lumpur</p>
+                <p className="text-gray-600 dark:text-gray-300">Real-time aircraft detected by Suhaimi Amir's ADS-B receiver in Kuala Lumpur</p>
               </div>
               <div className="flex items-center gap-4">
                 <ThemeSelector />
@@ -39,12 +39,12 @@ export default function HomePage() {
           <Suspense fallback={<div>Loading charts...</div>}>
             <ChartsWrapper />
           </Suspense>
-          <LastUpdated className="text-right mb-4" />
 
           <Suspense fallback={<div>Loading current aircraft...</div>}>
             <CurrentAircraftWrapper />
           </Suspense>
-          <LastUpdated className="text-right mt-2" />
+
+          <LastUpdated className="text-right mt-4" />
         </div>
       </div>
     </TimeRangeProvider>

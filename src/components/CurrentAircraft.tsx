@@ -32,12 +32,15 @@ function getSquawkInfo(squawk: string) {
   return EMERGENCY_SQUAWKS[squawk as keyof typeof EMERGENCY_SQUAWKS] || null
 }
 
+// Use polling interval from environment
+const POLL_INTERVAL = parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL || '30000')
+
 export function CurrentAircraft() {
   const [aircraft, setAircraft] = useState<CurrentAircraftData[]>([])
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (isInitial = false) => {
       try {
         const response = await fetch('/api/current-aircraft')
         const data = await response.json()
@@ -45,12 +48,19 @@ export function CurrentAircraft() {
       } catch (error) {
         console.error('Error fetching current aircraft:', error)
       } finally {
-        setLoading(false)
+        if (isInitial) {
+          setInitialLoading(false)
+        }
       }
     }
 
-    fetchData()
-    const interval = setInterval(fetchData, 10000) // Update every 10 seconds
+    // Initial fetch with loading state
+    fetchData(true)
+
+    // Set up auto-refresh using environment interval (no loading state)
+    const interval = setInterval(() => {
+      fetchData(false)
+    }, POLL_INTERVAL)
 
     return () => clearInterval(interval)
   }, [])
@@ -81,7 +91,7 @@ export function CurrentAircraft() {
     window.open(url, '_blank')
   }
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Current Aircraft</h2>
@@ -93,8 +103,8 @@ export function CurrentAircraft() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Current Aircraft</h2>
-        <span className="text-sm text-gray-500 dark:text-gray-400">{aircraft.length} aircraft currently tracked</span>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Current Aircraft</h2>
+        <span className="text-sm text-gray-500 dark:text-gray-400">{aircraft.length} aircraft currently being tracked</span>
       </div>
       
       {aircraft.length > 0 ? (
