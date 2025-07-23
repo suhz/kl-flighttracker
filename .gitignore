@@ -167,8 +167,7 @@ logs/
 *.temp
 *.tmp
 
-# Collector specific
-collector/
+# Collector specific (ignore data, logs, cache, but not source code)
 collector-data/
 collector-logs/
 collector-cache/
