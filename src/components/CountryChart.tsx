@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTimeRange } from '@/contexts/TimeRangeContext'
 import { getCountryFlag } from '@/lib/countryFlags'
+import { fetchCountryStats } from '@/lib/api-client'
 
 interface CountryData {
   country: string;
@@ -21,8 +22,7 @@ export function CountryChart() {
   useEffect(() => {
     const fetchData = async (isInitial = false) => {
       try {
-        const response = await fetch(`/api/countries?timeRange=${timeRange}`)
-        const chartData = await response.json()
+        const chartData = await fetchCountryStats(timeRange)
         setData(chartData)
       } catch (error) {
         console.error('Error fetching countries:', error)

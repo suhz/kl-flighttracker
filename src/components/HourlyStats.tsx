@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { fetchHourlyStats } from '@/lib/api-client'
 
 interface HourlyStatsData {
   hourLabel: string
@@ -14,11 +15,10 @@ export function HourlyStats() {
   const [hours, setHours] = useState(24)
 
   useEffect(() => {
-    const fetchHourlyStats = async () => {
+    const fetchHourlyStatsData = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/hourly-stats?hours=${hours}`)
-        const statsData = await response.json()
+        const statsData = await fetchHourlyStats(hours)
         setData(statsData)
       } catch (error) {
         console.error('Error fetching hourly stats:', error)
@@ -27,8 +27,8 @@ export function HourlyStats() {
       }
     }
 
-    fetchHourlyStats()
-    const interval = setInterval(fetchHourlyStats, 60000) // Update every minute
+    fetchHourlyStatsData()
+    const interval = setInterval(fetchHourlyStatsData, 60000) // Update every minute
 
     return () => clearInterval(interval)
   }, [hours])

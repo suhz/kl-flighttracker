@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { fetchHourlyAirlineStats } from '@/lib/api-client'
 
 interface AirlineData {
   airline: string;
@@ -24,8 +25,7 @@ export function HourlyAirlineStats() {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/hourly-airline-stats?hours=${hours}`)
-        const chartData = await response.json()
+        const chartData = await fetchHourlyAirlineStats(hours)
         setData(chartData)
       } catch (error) {
         console.error('Error fetching hourly airline stats:', error)
@@ -113,7 +113,7 @@ export function HourlyAirlineStats() {
       </div>
       
       {chartData.length > 0 ? (
-        <div className="h-80">
+        <div className="h-[500px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />

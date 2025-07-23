@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { AircraftMap } from './AircraftMap'
+import { fetchCurrentAircraft } from '@/lib/api-client'
 
-interface CurrentAircraftData {
+export interface CurrentAircraftData {
   hex: string
   flight: string
   registration: string
@@ -11,6 +13,7 @@ interface CurrentAircraftData {
   flag: string
   altitude: number
   groundSpeed: number
+  track: number | null
   squawk: string
   lat: number | null
   lon: number | null
@@ -34,16 +37,17 @@ function getSquawkInfo(squawk: string) {
 
 // Use polling interval from environment
 const POLL_INTERVAL = parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL || '30000')
+console.log('🕐 CurrentAircraft polling interval:', POLL_INTERVAL, 'ms')
 
 export function CurrentAircraft() {
   const [aircraft, setAircraft] = useState<CurrentAircraftData[]>([])
   const [initialLoading, setInitialLoading] = useState(true)
+  const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
     const fetchData = async (isInitial = false) => {
       try {
-        const response = await fetch('/api/current-aircraft')
-        const data = await response.json()
+        const data = await fetchCurrentAircraft()
         setAircraft(data)
       } catch (error) {
         console.error('Error fetching current aircraft:', error)
@@ -65,20 +69,40 @@ export function CurrentAircraft() {
     return () => clearInterval(interval)
   }, [])
 
+  // Live timer for "Last Seen" that updates every second (only when aircraft are visible)
+  useEffect(() => {
+    if (aircraft.length === 0) return
+
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [aircraft.length])
+
   const formatTimeAgo = (seenAt: string) => {
-    const now = new Date()
     const seen = new Date(seenAt)
-    const diffInSeconds = Math.floor((now.getTime() - seen.getTime()) / 1000)
+    const diffInSeconds = Math.floor((currentTime.getTime() - seen.getTime()) / 1000)
     
-    if (diffInSeconds < 60) {
-      return `${diffInSeconds} seconds ago`
-    } else if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60)
-      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
+    let text = `${diffInSeconds}s ago`
+    let className = "text-sm flex items-center gap-1"
+    let dotColor = ""
+    
+    if (diffInSeconds < 30) {
+      // Very fresh - green with pulse
+      className += " text-green-600 dark:text-green-400 animate-pulse font-medium"
+      dotColor = "bg-green-500 animate-pulse"
+    } else if (diffInSeconds < 60) {
+      // Fresh - green
+      className += " text-green-600 dark:text-green-400"
+      dotColor = "bg-green-500"
     } else {
-      const hours = Math.floor(diffInSeconds / 3600)
-      return `${hours} hour${hours > 1 ? 's' : ''} ago`
+      // Getting old (60-120s) - yellow/amber
+      className += " text-amber-600 dark:text-amber-400"
+      dotColor = "bg-amber-500"
     }
+    
+    return { text, className, dotColor }
   }
 
   const formatCoordinates = (lat: number | null, lon: number | null) => {
@@ -102,10 +126,28 @@ export function CurrentAircraft() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Current Aircraft</h2>
-        <span className="text-sm text-gray-500 dark:text-gray-400">{aircraft.length} aircraft currently being tracked</span>
-      </div>
+      {/* Live Aircraft Map */}
+      <AircraftMap aircraft={aircraft} />
+
+      {/* Aircraft Data Table */}
+      <div className="mt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Aircraft Data</h2>
+          <div className="flex items-center gap-4">
+            <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+              Status: 
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                <span>&lt;60s</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span>60s+</span>
+              </span>
+            </div>
+            <span className="text-sm text-gray-500 dark:text-gray-400">{aircraft.length} aircraft</span>
+          </div>
+        </div>
       
       {aircraft.length > 0 ? (
         <div className="overflow-x-auto">
@@ -176,8 +218,16 @@ export function CurrentAircraft() {
                         <span className="text-sm text-gray-400 dark:text-gray-500">-</span>
                       )}
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                      {formatTimeAgo(plane.seenAt)}
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      {(() => {
+                        const timeInfo = formatTimeAgo(plane.seenAt)
+                        return (
+                          <span className={timeInfo.className} title={`Last seen at ${new Date(plane.seenAt).toLocaleString()}`}>
+                            <span className={`w-2 h-2 rounded-full ${timeInfo.dotColor}`}></span>
+                            {timeInfo.text}
+                          </span>
+                        )
+                      })()}
                     </td>
                   </tr>
                 )
@@ -185,11 +235,12 @@ export function CurrentAircraft() {
             </tbody>
           </table>
         </div>
-      ) : (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          No aircraft currently in range
-        </div>
-      )}
+        ) : (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            No aircraft currently in range
+          </div>
+        )}
+      </div>
     </div>
   )
 } 

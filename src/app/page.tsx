@@ -32,16 +32,18 @@ export default function HomePage() {
             </div>
           </header>
           
-          <Suspense fallback={<div>Loading statistics...</div>}>
-            <StatsCardsClient />
+          <Suspense fallback={<div>Loading current aircraft...</div>}>
+            <CurrentAircraftWrapper />
           </Suspense>
+
+          <div className="mt-12">
+            <Suspense fallback={<div>Loading statistics...</div>}>
+              <StatsCardsClient />
+            </Suspense>
+          </div>
           
           <Suspense fallback={<div>Loading charts...</div>}>
             <ChartsWrapper />
-          </Suspense>
-
-          <Suspense fallback={<div>Loading current aircraft...</div>}>
-            <CurrentAircraftWrapper />
           </Suspense>
 
           <LastUpdated className="text-right mt-4" />

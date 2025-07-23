@@ -18,6 +18,7 @@ model AircraftSighting {
   countryCode  String?  // Country code (MY, SG, etc.)
   altitude     Int?     // Altitude in feet
   groundSpeed  Float?   // Ground speed
+  track        Float?   // Aircraft heading/track in degrees
   distance     Float?   // Distance from receiver (km)
   rssi         Float?   // Signal strength
   lat          Float?   // Latitude

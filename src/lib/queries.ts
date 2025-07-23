@@ -233,7 +233,7 @@ export async function getTopAirlines(limit = 50, timeRange = '1w') {
 }
 
 export async function getCurrentAircraft() {
-  const recentTime = new Date(Date.now() - 90 * 1000) // Aircraft seen in last 90 seconds
+  const recentTime = new Date(Date.now() - 120 * 1000) // Aircraft seen in last 120 seconds
   
   const aircraft = await prisma.aircraftSighting.findMany({
     where: {
@@ -264,6 +264,7 @@ export async function getCurrentAircraft() {
       flag: flag,
       altitude: plane.altitude || 0,
       groundSpeed: plane.groundSpeed || 0,
+      track: plane.track || null,
       distance: plane.distance || 0,
       rssi: plane.rssi || 0,
       squawk: plane.squawk || '',

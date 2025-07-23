@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 import { StatsCards } from './StatsCards'
 import { DashboardStats } from '@/types/aircraft'
 import { useTimeRange } from '@/contexts/TimeRangeContext'
+import { fetchStats } from '@/lib/api-client'
 
 // Use polling interval from environment
 const POLL_INTERVAL = parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL || '30000')
+console.log('📊 StatsCardsClient polling interval:', POLL_INTERVAL, 'ms')
 
 export function StatsCardsClient() {
   const { timeRange, setTimeRange } = useTimeRange()
@@ -14,10 +16,9 @@ export function StatsCardsClient() {
   const [initialLoading, setInitialLoading] = useState(true)
 
   useEffect(() => {
-    const fetchStats = async (isInitial = false) => {
+    const fetchStatsData = async (isInitial = false) => {
       try {
-        const response = await fetch(`/api/stats?timeRange=${timeRange}`)
-        const data = await response.json()
+        const data = await fetchStats(timeRange)
         setStats(data)
       } catch (error) {
         console.error('Error fetching stats:', error)
@@ -29,11 +30,11 @@ export function StatsCardsClient() {
     }
 
     // Initial fetch with loading state
-    fetchStats(true)
+    fetchStatsData(true)
 
     // Set up auto-refresh using environment interval (no loading state)
     const interval = setInterval(() => {
-      fetchStats(false)
+      fetchStatsData(false)
     }, POLL_INTERVAL)
 
     // Cleanup interval on unmount or timeRange change

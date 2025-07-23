@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { fetchHourlyCountryStats } from '@/lib/api-client'
 
 interface CountryData {
   country: string;
@@ -24,8 +25,7 @@ export function HourlyCountryStats() {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/hourly-country-stats?hours=${hours}`)
-        const chartData = await response.json()
+        const chartData = await fetchHourlyCountryStats(hours)
         setData(chartData)
       } catch (error) {
         console.error('Error fetching hourly country stats:', error)
@@ -113,7 +113,7 @@ export function HourlyCountryStats() {
       </div>
       
       {chartData.length > 0 ? (
-        <div className="h-80">
+        <div className="h-[500px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />

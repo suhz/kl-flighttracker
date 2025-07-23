@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTimeRange } from '@/contexts/TimeRangeContext'
+import { fetchAirlineStats } from '@/lib/api-client'
 
 interface AirlineData {
   airline: string;
@@ -22,8 +23,7 @@ export function AirlineChart() {
   useEffect(() => {
     const fetchData = async (isInitial = false) => {
       try {
-        const response = await fetch(`/api/airlines?timeRange=${timeRange}`)
-        const chartData = await response.json()
+        const chartData = await fetchAirlineStats(timeRange)
         setData(chartData)
       } catch (error) {
         console.error('Error fetching airlines:', error)

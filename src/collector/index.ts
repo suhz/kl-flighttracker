@@ -87,6 +87,7 @@ class AircraftCollector {
         countryCode: countryInfo.code !== 'XX' ? countryInfo.code : null,
         altitude: aircraft.alt_baro || null,
         groundSpeed: aircraft.gs || null,
+        track: aircraft.track || null,
         distance: aircraft.r_dst || null,
         rssi: aircraft.rssi || null,
         lat: aircraft.lat || null,
