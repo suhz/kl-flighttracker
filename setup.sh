@@ -127,8 +127,21 @@ fetch_airlines() {
     # Wait a bit for the collector to be ready
     sleep 5
     
-    # Fetch airlines data
-    docker compose exec dashboard npm run fetch-airlines
+    # Ensure data directory has proper permissions
+    docker compose exec dashboard chown -R nextjs:nodejs /app/data/ || true
+    
+    # Try to fetch airlines data, if it fails due to permissions, fix and retry
+    if ! docker compose exec dashboard npm run fetch-airlines; then
+        print_warning "Airlines fetch failed, attempting to fix permissions..."
+        
+        # Create the airlines.json file with proper permissions if it doesn't exist
+        docker compose exec dashboard touch /app/data/airlines.json
+        docker compose exec dashboard chown nextjs:nodejs /app/data/airlines.json
+        docker compose exec dashboard chmod 664 /app/data/airlines.json
+        
+        # Try again
+        docker compose exec dashboard npm run fetch-airlines
+    fi
     
     print_success "Airlines data fetched"
 }
