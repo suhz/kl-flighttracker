@@ -18,6 +18,8 @@ const airlineNameToCode = {
   'China Eastern Airlines': 'CES',
   'IndiGo': 'IGO',
   'VistaJet': 'VJT',
+  'MJets Air': 'KXP',
+  'MJets': 'KXP',
   'Polis Diraja Malaysia': 'POLIS',
   'Bomba dan Penyelamat Malaysia': 'BOMBA',
   'Agensi Penguatkuasaan Maritim Malaysia': 'APMM',

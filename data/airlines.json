@@ -20938,5 +20938,25 @@
     "callsign": "VISTA JET",
     "country": "Malta",
     "active": true
+  },
+  "KXP": {
+    "id": 90015,
+    "name": "MJets Air",
+    "alias": "MJets",
+    "iata": "WW",
+    "icao": "KXP",
+    "callsign": "EMJET",
+    "country": "Malaysia",
+    "active": true
+  },
+  "WW": {
+    "id": 90015,
+    "name": "MJets Air",
+    "alias": "MJets",
+    "iata": "WW",
+    "icao": "KXP",
+    "callsign": "EMJET",
+    "country": "Malaysia",
+    "active": true
   }
 }
