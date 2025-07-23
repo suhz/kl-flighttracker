@@ -13,7 +13,7 @@ model AircraftSighting {
   flight       String?  // Flight number/callsign
   registration String?  // Aircraft registration
   aircraftType String?  // Aircraft type (A320, B737, etc.)
-  airline      String?  // Extracted from flight prefix
+  airline      String?  // Airline code extracted from flight prefix
   country      String?  // From registration prefix
   countryCode  String?  // Country code (MY, SG, etc.)
   altitude     Int?     // Altitude in feet

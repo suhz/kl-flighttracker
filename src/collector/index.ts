@@ -75,14 +75,13 @@ class AircraftCollector {
     const sightings = data.aircraft.map(aircraft => {
       const countryInfo = getCountryFromHex(aircraft.hex);
       const airlineCode = extractAirlineFromFlight(aircraft.flight || '');
-      const airlineName = airlineCode !== 'Unknown' ? getAirlineName(airlineCode) : null;
       
       return {
         hex: aircraft.hex,
         flight: aircraft.flight?.trim() || null,
         registration: aircraft.r || null,
         aircraftType: aircraft.t || null,
-        airline: airlineName,
+        airline: airlineCode !== 'Unknown' ? airlineCode : null,
         country: countryInfo.country !== 'Unknown' ? countryInfo.country : null,
         countryCode: countryInfo.code !== 'XX' ? countryInfo.code : null,
         altitude: aircraft.alt_baro || null,
