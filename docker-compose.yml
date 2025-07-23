@@ -6,7 +6,7 @@ services:
     volumes:
       - ./data:/app/data
     environment:
-      - DATABASE_URL=file:./data/aircraft.db
+      - DATABASE_URL=file:/app/data/aircraft.db
       - ULTRAFEEDER_HOST=http://192.168.1.50:8080
       - POLL_INTERVAL=30000
       - DATA_RETENTION_DAYS=30
@@ -19,8 +19,9 @@ services:
     build: .
     volumes:
       - ./data:/app/data
+      - ./src:/app/src:ro
     environment:
-      - DATABASE_URL=file:./data/aircraft.db
+      - DATABASE_URL=file:/app/data/aircraft.db
       - ULTRAFEEDER_HOST=http://192.168.1.50:8080
       - POLL_INTERVAL=30000
       - DATA_RETENTION_DAYS=30

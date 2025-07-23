@@ -26,39 +26,45 @@ git clone <repository-url>
 cd adsb-dashboard
 ```
 
-### 2. Configure Environment
+### 2. Run Setup Script (Recommended)
 ```bash
-cp env.example .env
+# This will do everything automatically
+./setup.sh
 ```
 
-Edit `.env` with your Ultrafeeder settings:
-```env
-DATABASE_URL="file:./data/aircraft.db"
-ULTRAFEEDER_HOST="http://YOUR_ULTRAFEEDER_IP:8080"
-POLL_INTERVAL=30000
-DATA_RETENTION_DAYS=30
-NODE_ENV=production
-PORT=3000
-```
+The setup script will:
+- ✅ Check Docker installation
+- ✅ Create data directory
+- ✅ Create .env file with default settings
+- ✅ Build and start containers
+- ✅ Initialize database
+- ✅ Fetch airlines data
+- ✅ Show status and next steps
 
-### 3. Create Data Directory
+### 3. Manual Setup (Alternative)
+If you prefer to do it manually:
+
 ```bash
+# Create data directory
 mkdir -p data
+
+# Create .env file
+cp env.example .env
+
+# Edit .env with your Ultrafeeder settings
+nano .env
+
+# Start containers
+docker compose up -d --build
+
+# Initialize database
+docker compose exec collector npx prisma db push
+
+# Fetch airlines data
+docker compose exec dashboard npm run fetch-airlines
 ```
 
-### 4. Start with Docker Compose
-```bash
-# Start both dashboard and collector
-docker compose up -d
-
-# View logs
-docker compose logs -f
-
-# Check status
-docker compose ps
-```
-
-### 5. Access Dashboard
+### 4. Access Dashboard
 Open your browser and visit: `http://localhost:3000`
 
 ## Docker Options
@@ -70,7 +76,9 @@ docker compose up -d
 
 ### Run Dashboard Only
 ```bash
-docker compose -f docker-compose.dashboard.yml up -d
+# Stop collector and run only dashboard
+docker compose stop collector
+docker compose up dashboard -d
 ```
 
 ### Run Collector Only
@@ -98,6 +106,23 @@ docker compose down
 ### Rebuild and Restart
 ```bash
 docker compose down
+docker compose up -d --build
+```
+
+### Fetch Airlines Data
+```bash
+# Option 1: Direct command
+docker compose exec dashboard npm run fetch-airlines
+
+# Option 2: Using the convenience script
+./docker-fetch-airlines.sh
+```
+
+### Update Installation
+```bash
+# Update to latest version
+./update.sh
+```
 docker compose up -d --build
 ```
 
