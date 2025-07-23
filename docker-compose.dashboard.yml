@@ -12,6 +12,7 @@ services:
       - NEXT_PUBLIC_POLL_INTERVAL=30000
       - DATA_RETENTION_DAYS=30
       - NODE_ENV=production
+      - TZ=Asia/Kuala_Lumpur
     restart: unless-stopped
 
 volumes:
