@@ -16,25 +16,36 @@ interface HourlyCountryStatsData {
   totalAircraft: number;
 }
 
+// Use polling interval from environment  
+const POLL_INTERVAL = parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL || '30000')
+
 export function HourlyCountryStats() {
   const [data, setData] = useState<HourlyCountryStatsData[]>([])
   const [loading, setLoading] = useState(true)
   const [hours, setHours] = useState(24) // Default to 24 hours
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (isInitial = false) => {
       try {
-        setLoading(true)
+        if (isInitial) setLoading(true)
         const chartData = await fetchHourlyCountryStats(hours)
         setData(chartData)
       } catch (error) {
         console.error('Error fetching hourly country stats:', error)
       } finally {
-        setLoading(false)
+        if (isInitial) setLoading(false)
       }
     }
 
-    fetchData()
+    // Initial fetch with loading state
+    fetchData(true)
+
+    // Set up auto-refresh using environment interval (no loading state)
+    const interval = setInterval(() => {
+      fetchData(false)
+    }, POLL_INTERVAL)
+
+    return () => clearInterval(interval)
   }, [hours])
 
   // Transform data for line chart - each country becomes a line

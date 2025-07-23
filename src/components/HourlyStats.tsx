@@ -9,26 +9,34 @@ interface HourlyStatsData {
   count: number
 }
 
+// Use polling interval from environment  
+const POLL_INTERVAL = parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL || '30000')
+
 export function HourlyStats() {
   const [data, setData] = useState<HourlyStatsData[]>([])
   const [loading, setLoading] = useState(true)
   const [hours, setHours] = useState(24)
 
   useEffect(() => {
-    const fetchHourlyStatsData = async () => {
+    const fetchHourlyStatsData = async (isInitial = false) => {
       try {
-        setLoading(true)
+        if (isInitial) setLoading(true)
         const statsData = await fetchHourlyStats(hours)
         setData(statsData)
       } catch (error) {
         console.error('Error fetching hourly stats:', error)
       } finally {
-        setLoading(false)
+        if (isInitial) setLoading(false)
       }
     }
 
-    fetchHourlyStatsData()
-    const interval = setInterval(fetchHourlyStatsData, 60000) // Update every minute
+    // Initial fetch with loading state
+    fetchHourlyStatsData(true)
+
+    // Set up auto-refresh using environment interval (no loading state)
+    const interval = setInterval(() => {
+      fetchHourlyStatsData(false)
+    }, POLL_INTERVAL)
 
     return () => clearInterval(interval)
   }, [hours])
