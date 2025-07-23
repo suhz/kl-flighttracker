@@ -122,11 +122,15 @@ public
 *.db
 *.sqlite
 *.sqlite3
-data/
 *.db-journal
+data/*.db
+data/*.sqlite
+data/*.sqlite3
 
-# ADS-B Dashboard Specific Files
-data/
+# ADS-B Dashboard Specific Files - ignore data directory except airlines.json
+data/*
+!data/airlines.json
+!data/README.md
 cache/
 logs/
 *.aircraft
