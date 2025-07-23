@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'KL FlightTracker',
-  description: 'Real-time flight data captured by Suhaimi Amir\'s ADS-B station in Kuala Lumpur',
+  description: 'Real-time aircraft detected by Suhaimi Amir’s ADS-B receiver in Kuala Lumpur',
 }
 
 export default function RootLayout({

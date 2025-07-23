@@ -18,7 +18,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">KL FlightTracker</h1>
-                <p className="text-gray-600 dark:text-gray-300">Real-time flight data captured by Suhaimi Amir's ADS-B station in Kuala Lumpur</p>
+                <p className="text-gray-600 dark:text-gray-300">Real-time aircraft detected by Suhaimi Amir’s ADS-B receiver in Kuala Lumpur</p>
               </div>
               <div className="flex items-center gap-4">
                 <ThemeSelector />

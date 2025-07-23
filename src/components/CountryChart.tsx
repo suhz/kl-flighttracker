@@ -75,7 +75,7 @@ export function CountryChart() {
             <div key={index} className="flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
               <div className="flex items-center">
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-6">{index + 1}</span>
-                <span className="mr-2">{getCountryFlag(item.country || 'Unknown')}</span>
+                <span className="w-6 text-center mr-2">{getCountryFlag(item.country || 'Unknown')}</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">{item.country || 'Unknown'}</span>
               </div>
               <span className="text-sm font-semibold text-green-600 dark:text-green-400">{item.count}</span>

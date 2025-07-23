@@ -42,7 +42,7 @@ export function StatsCards({ stats, timeRange, onTimeRangeChange }: StatsCardsPr
     },
     {
       value: `${stats.maxDistance.toFixed(1)}km`,
-      label: 'Max Distance',
+      label: 'Farthest Seen',
       color: 'bg-indigo-600',
       icon: '📡'
     }
