@@ -142,7 +142,6 @@ stats-cache/
 hourly-stats/
 country-stats/
 airline-stats/
-aircraft-types/
 airlines.json
 airlines-cache.json
 airlines-backup.json
