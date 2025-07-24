@@ -97,31 +97,64 @@ rolling_update_service() {
     print_success "✅ $service updated successfully"
 }
 
-# Docker cleanup function (SAFE SYSTEM-WIDE)
+# Docker cleanup function (PROJECT-ONLY by default)
 cleanup_docker() {
-    print_status "🧹 Cleaning up Docker resources..."
+    local system_wide=${1:-false}
+    
+    if [ "$system_wide" = "true" ]; then
+        print_status "🧹 Cleaning up ALL Docker resources (system-wide)..."
+    else
+        print_status "🧹 Cleaning up ADS-B Dashboard Docker resources (project-only)..."
+    fi
+    
+    # Get project name from docker-compose
+    local project_name=$(docker compose config --format json 2>/dev/null | grep -o '"name":"[^"]*"' | cut -d'"' -f4 2>/dev/null || echo "adsb-dashboard")
     
     print_status "📊 Docker disk usage before cleanup:"
     docker system df
     echo ""
     
-    # Remove stopped containers
-    print_status "🗑️ Removing stopped containers..."
-    if docker container prune -f | grep -q "deleted"; then
-        print_success "Removed stopped containers"
+    if [ "$system_wide" = "true" ]; then
+        # System-wide cleanup
+        print_status "🗑️ Removing ALL stopped containers..."
+        if docker container prune -f | grep -q "deleted"; then
+            print_success "Removed stopped containers"
+        else
+            print_status "No stopped containers to remove"
+        fi
+        
+        print_status "🗑️ Removing ALL unused images..."
+        if docker image prune -a -f | grep -q "deleted"; then
+            print_success "Removed unused images"
+        else
+            print_status "No unused images to remove"
+        fi
     else
-        print_status "No stopped containers to remove"
+        # Project-only cleanup
+        print_status "🗑️ Removing stopped ${project_name} containers..."
+        local stopped_containers=$(docker compose ps -a --services --filter "status=exited" 2>/dev/null || echo "")
+        if [ -n "$stopped_containers" ]; then
+            docker compose rm -f
+            print_success "Removed stopped project containers"
+        else
+            print_status "No stopped project containers to remove"
+        fi
+        
+        print_status "🗑️ Removing unused ${project_name} images..."
+        local project_images=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "^${project_name}" | head -n -2 2>/dev/null || echo "")
+        if [ -n "$project_images" ]; then
+            echo "$project_images" | while read -r image; do
+                if [ -n "$image" ] && ! docker ps --format "{{.Image}}" | grep -q "$image"; then
+                    docker rmi "$image" 2>/dev/null && echo "Removed: $image" || true
+                fi
+            done
+            print_success "Removed old project images"
+        else
+            print_status "No old project images to remove"
+        fi
     fi
     
-    # Remove all unused images (your suggestion!)
-    print_status "🗑️ Removing all unused images..."
-    if docker image prune -a -f | grep -q "deleted"; then
-        print_success "Removed unused images"
-    else
-        print_status "No unused images to remove"
-    fi
-    
-    # Clean build cache
+    # Clean build cache (safe for both modes)
     print_status "🗑️ Cleaning build cache..."
     if docker builder prune -f | grep -q "deleted"; then
         print_success "Cleaned build cache"
@@ -134,13 +167,19 @@ cleanup_docker() {
     print_status "📊 Docker disk usage after cleanup:"
     docker system df
     
-    print_success "✅ Docker cleanup completed!"
-    print_status "ℹ️  Removed all unused images and containers (keeps active ones)"
+    if [ "$system_wide" = "true" ]; then
+        print_success "✅ System-wide Docker cleanup completed!"
+        print_status "ℹ️  Cleaned ALL Docker resources (keeps active ones)"
+    else
+        print_success "✅ Project-only Docker cleanup completed!"
+        print_status "ℹ️  Only cleaned ${project_name} containers and images"
+    fi
 }
 
 # Update all services with zero downtime
 zero_downtime_update() {
     local skip_cleanup=${1:-false}
+    local system_wide_cleanup=${2:-false}
     
     print_status "Starting zero-downtime rolling update..."
     
@@ -159,7 +198,7 @@ zero_downtime_update() {
     
     # Clean up Docker resources (unless skipped)
     if [ "$skip_cleanup" != "true" ]; then
-        cleanup_docker
+        cleanup_docker "$system_wide_cleanup"
     else
         print_status "⏭️ Skipping Docker cleanup (--no-cleanup specified)"
     fi
@@ -213,6 +252,8 @@ show_status() {
 
 # Emergency fallback function for emergency
 emergency_fallback() {
+    local system_wide_cleanup=${1:-false}
+    
     print_error "⚠️ Emergency fallback triggered!"
     print_status "Falling back to standard update method with downtime..."
     
@@ -220,7 +261,7 @@ emergency_fallback() {
     docker compose up -d --build
     
     # Clean up after emergency fallback
-    cleanup_docker
+    cleanup_docker "$system_wide_cleanup"
     
     print_warning "Emergency fallback completed with brief downtime"
 }
@@ -228,6 +269,7 @@ emergency_fallback() {
 # Main update function
 main() {
     local skip_cleanup=${1:-false}
+    local system_wide_cleanup=${2:-false}
     
     echo ""
     print_status "Starting zero-downtime update process..."
@@ -237,7 +279,7 @@ main() {
     
     check_running
     update_code
-    zero_downtime_update "$skip_cleanup"
+    zero_downtime_update "$skip_cleanup" "$system_wide_cleanup"
     verify_airlines
     show_status
 }
@@ -247,9 +289,10 @@ show_usage() {
     echo "Usage: $0 [option]"
     echo ""
     echo "Options:"
-    echo "  (no option)     - Zero-downtime rolling update with cleanup (default)"
+    echo "  (no option)     - Zero-downtime update with project-only cleanup (default)"
     echo "  --no-cleanup    - Zero-downtime update without Docker cleanup"
-    echo "  --cleanup-only  - Only run Docker cleanup (no update)"
+    echo "  --system-wide   - Zero-downtime update with system-wide cleanup"
+    echo "  --cleanup-only  - Only run project-only Docker cleanup (no update)"
     echo "  --emergency     - Emergency fallback with brief downtime"
     echo "  --help, -h      - Show this help message"
     echo ""
@@ -257,14 +300,15 @@ show_usage() {
     echo "  • Updates services one at a time"
     echo "  • Maintains service availability"
     echo "  • Performs health checks"
-    echo "  • Cleans up old Docker images/containers"
+    echo "  • Cleans up only THIS project's Docker resources"
     echo ""
-    echo "Docker cleanup removes:"
-    echo "  • All stopped containers"
-    echo "  • All unused images (docker image prune -a)"
-    echo "  • Build cache"
+    echo "Docker cleanup removes (PROJECT-ONLY by default):"
+    echo "  • Stopped containers from this project only"
+    echo "  • Unused images from this project only"
+    echo "  • Build cache (system-wide)"
     echo ""
-    echo "⚠️  Keeps all active/running containers and their images"
+    echo "⚠️  Safe for servers with multiple Docker projects"
+    echo "💡 Use --system-wide to clean ALL Docker resources"
     echo ""
 }
 
@@ -272,24 +316,28 @@ show_usage() {
 case "${1:-}" in
     "--no-cleanup")
         print_status "🚀 Starting zero-downtime update (skipping Docker cleanup)"
-        main "true"
+        main "true" "false"
+        ;;
+    "--system-wide")
+        print_status "🚀 Starting zero-downtime update with system-wide cleanup"
+        main "false" "true"
         ;;
     "--cleanup-only")
-        print_status "🧹 Running Docker cleanup only..."
-        cleanup_docker
-        print_success "✅ Docker cleanup completed!"
+        print_status "🧹 Running project-only Docker cleanup..."
+        cleanup_docker "false"
+        print_success "✅ Project-only Docker cleanup completed!"
         ;;
     "--emergency")
         print_warning "⚠️ Running emergency fallback update (with downtime)..."
-        emergency_fallback
+        emergency_fallback "false"
         ;;
     "--help"|"-h")
         show_usage
         exit 0
         ;;
     "")
-        print_status "🚀 Starting zero-downtime update with automatic cleanup (default method)"
-        main "false"
+        print_status "🚀 Starting zero-downtime update with project-only cleanup (default method)"
+        main "false" "false"
         ;;
     *)
         print_warning "Unknown option: $1"

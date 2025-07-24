@@ -36,62 +36,109 @@ show_usage() {
     echo "Usage: $0 [option]"
     echo ""
     echo "Options:"
-    echo "  (no option)  - Standard cleanup (safe)"
-    echo "  --aggressive - Aggressive cleanup (removes more images)"
-    echo "  --dry-run    - Show what would be cleaned without doing it"
-    echo "  --help, -h   - Show this help message"
+    echo "  (no option)     - Project-only cleanup (safe, default)"
+    echo "  --system-wide   - System-wide cleanup (all Docker resources)"
+    echo "  --aggressive    - Aggressive system-wide cleanup (includes volumes)"
+    echo "  --dry-run       - Show what would be cleaned without doing it"
+    echo "  --help, -h      - Show this help message"
     echo ""
-    echo "Standard cleanup removes:"
-    echo "  • All stopped containers"
-    echo "  • All unused images (docker image prune -a)"
+    echo "Project-only cleanup removes (DEFAULT):"
+    echo "  • Stopped containers from this project only"
+    echo "  • Unused images from this project only"
+    echo "  • Build cache (system-wide)"
+    echo ""
+    echo "System-wide cleanup removes:"
+    echo "  • ALL stopped containers"
+    echo "  • ALL unused images"
     echo "  • Build cache"
     echo ""
     echo "Aggressive cleanup also removes:"
     echo "  • Unused volumes (be careful!)"
     echo "  • Unused networks"
     echo ""
-    echo "⚠️  Both modes keep active/running containers and their images"
+    echo "⚠️  Project-only mode is safest for multi-project servers"
+    echo "💡 All modes keep active/running containers and their images"
     echo ""
 }
 
-# Standard Docker cleanup
+# Standard Docker cleanup (PROJECT-ONLY by default)
 standard_cleanup() {
     local dry_run=${1:-false}
+    local system_wide=${2:-false}
     
     if [ "$dry_run" = "true" ]; then
         print_warning "DRY RUN MODE - No changes will be made"
         echo ""
     fi
     
-    print_status "🧹 Running standard Docker cleanup..."
+    if [ "$system_wide" = "true" ]; then
+        print_status "🧹 Running system-wide Docker cleanup..."
+    else
+        print_status "🧹 Running project-only Docker cleanup..."
+    fi
+    
+    # Get project name from docker-compose
+    local project_name=$(docker compose config --format json 2>/dev/null | grep -o '"name":"[^"]*"' | cut -d'"' -f4 2>/dev/null || echo "adsb-dashboard")
     
     # Show current disk usage
     print_status "📊 Docker disk usage before cleanup:"
     docker system df
     echo ""
     
-    # Remove stopped containers
-    print_status "🗑️ Removing stopped containers..."
-    if [ "$dry_run" = "true" ]; then
-        docker container ls -a --filter "status=exited" --format "table {{.Names}}\t{{.Status}}\t{{.Size}}"
-    else
-        if docker container prune -f | grep -q "deleted"; then
-            print_success "Removed stopped containers"
+    if [ "$system_wide" = "true" ]; then
+        # System-wide cleanup
+        print_status "🗑️ Removing ALL stopped containers..."
+        if [ "$dry_run" = "true" ]; then
+            docker container ls -a --filter "status=exited" --format "table {{.Names}}\t{{.Status}}\t{{.Size}}"
         else
-            print_status "No stopped containers to remove"
+            if docker container prune -f | grep -q "deleted"; then
+                print_success "Removed stopped containers"
+            else
+                print_status "No stopped containers to remove"
+            fi
         fi
-    fi
-    
-    # Remove all unused images (as suggested)
-    print_status "🗑️ Removing all unused images..."
-    if [ "$dry_run" = "true" ]; then
-        docker images --filter "dangling=false" --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}" | head -20
-        echo "... (and more unused images)"
-    else
-        if docker image prune -a -f | grep -q "deleted"; then
-            print_success "Removed unused images"
+        
+        print_status "🗑️ Removing ALL unused images..."
+        if [ "$dry_run" = "true" ]; then
+            docker images --filter "dangling=false" --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}" | head -20
+            echo "... (and more unused images)"
         else
-            print_status "No unused images to remove"
+            if docker image prune -a -f | grep -q "deleted"; then
+                print_success "Removed unused images"
+            else
+                print_status "No unused images to remove"
+            fi
+        fi
+    else
+        # Project-only cleanup
+        print_status "🗑️ Removing stopped ${project_name} containers..."
+        if [ "$dry_run" = "true" ]; then
+            docker compose ps -a --format "table {{.Name}}\t{{.State}}\t{{.Status}}" 2>/dev/null || echo "No project containers found"
+        else
+            local stopped_containers=$(docker compose ps -a --services --filter "status=exited" 2>/dev/null || echo "")
+            if [ -n "$stopped_containers" ]; then
+                docker compose rm -f
+                print_success "Removed stopped project containers"
+            else
+                print_status "No stopped project containers to remove"
+            fi
+        fi
+        
+        print_status "🗑️ Removing unused ${project_name} images..."
+        if [ "$dry_run" = "true" ]; then
+            docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}" | grep "${project_name}" || echo "No project images found"
+        else
+            local project_images=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "^${project_name}" | head -n -2 2>/dev/null || echo "")
+            if [ -n "$project_images" ]; then
+                echo "$project_images" | while read -r image; do
+                    if [ -n "$image" ] && ! docker ps --format "{{.Image}}" | grep -q "$image"; then
+                        docker rmi "$image" 2>/dev/null && echo "Removed: $image" || true
+                    fi
+                done
+                print_success "Removed old project images"
+            else
+                print_status "No old project images to remove"
+            fi
         fi
     fi
     
@@ -113,32 +160,34 @@ standard_cleanup() {
         print_status "📊 Docker disk usage after cleanup:"
         docker system df
         echo ""
-        print_success "✅ Standard cleanup completed!"
-        print_status "ℹ️  Removed all unused images and containers (keeps active ones)"
+        if [ "$system_wide" = "true" ]; then
+            print_success "✅ System-wide cleanup completed!"
+            print_status "ℹ️  Cleaned ALL Docker resources (keeps active ones)"
+        else
+            print_success "✅ Project-only cleanup completed!"
+            print_status "ℹ️  Only cleaned ${project_name} containers and images"
+        fi
     else
         echo ""
         print_status "✅ Dry run completed - no changes made"
-        print_status "ℹ️  Would remove all unused images and containers"
+        if [ "$system_wide" = "true" ]; then
+            print_status "ℹ️  Would clean ALL Docker resources"
+        else
+            print_status "ℹ️  Would only clean ${project_name} containers and images"
+        fi
     fi
 }
 
-# Aggressive Docker cleanup
+# Aggressive Docker cleanup (SYSTEM-WIDE)
 aggressive_cleanup() {
-    print_warning "⚠️ Running AGGRESSIVE Docker cleanup..."
+    print_warning "⚠️ Running AGGRESSIVE Docker cleanup (system-wide)..."
     print_warning "This will remove ALL unused images and volumes!"
     echo ""
     
-    # Run standard cleanup first
-    standard_cleanup false
+    # Run standard cleanup first (system-wide)
+    standard_cleanup false true
     
     echo ""
-    print_status "🗑️ Removing ALL unused images..."
-    if docker image prune -a -f | grep -q "deleted"; then
-        print_success "Removed all unused images"
-    else
-        print_status "No unused images to remove"
-    fi
-    
     print_status "🗑️ Removing unused volumes..."
     if docker volume prune -f | grep -q "deleted"; then
         print_success "Removed unused volumes"
@@ -160,18 +209,25 @@ aggressive_cleanup() {
 
 # Handle command line arguments
 case "${1:-}" in
+    "--system-wide")
+        standard_cleanup false true
+        ;;
     "--aggressive")
         aggressive_cleanup
         ;;
     "--dry-run")
-        standard_cleanup true
+        if [ "${2:-}" = "--system-wide" ]; then
+            standard_cleanup true true
+        else
+            standard_cleanup true false
+        fi
         ;;
     "--help"|"-h")
         show_usage
         exit 0
         ;;
     "")
-        standard_cleanup false
+        standard_cleanup false false
         ;;
     *)
         print_error "Unknown option: $1"
