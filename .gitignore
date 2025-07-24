@@ -127,9 +127,10 @@ data/*.db
 data/*.sqlite
 data/*.sqlite3
 
-# ADS-B Dashboard Specific Files - ignore data directory except airlines.json
+# ADS-B Dashboard Specific Files - ignore data directory except specific files
 data/*
 !data/airlines.json
+!data/aircraft-types.json
 !data/README.md
 cache/
 logs/
