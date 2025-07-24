@@ -4708,5 +4708,21 @@
     "callsign": "ARMY AIR",
     "country": "Malaysia",
     "active": true
+  },
+  "UBG": {
+    "name": "US-Bangla Airlines",
+    "icao": "UBG",
+    "iata": "BS",
+    "callsign": "BANGLA STAR",
+    "country": "Bangladesh",
+    "active": true
+  },
+  "TNU": {
+    "name": "TransNusa",
+    "icao": "TNU",
+    "iata": "8B",
+    "callsign": "TRANSNUSA",
+    "country": "Indonesia",
+    "active": true
   }
 }
