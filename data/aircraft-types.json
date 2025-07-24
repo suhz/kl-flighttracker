@@ -1,8 +1,8 @@
 {
   "_metadata": {
     "description": "Curated aircraft type database with ICAO codes and names",
-    "lastUpdated": "2025-07-24",
-    "totalAircraftTypes": 331,
+    "lastUpdated": "2025-01-27",
+    "totalAircraftTypes": 332,
     "sources": "Originally based on VICE project data with additional curated entries",
     "note": "This is a curated database combining aircraft types from multiple sources for ADS-B dashboard use."
   },
@@ -1058,6 +1058,10 @@
     "E75S": {
       "name": "Embraer 175",
       "icao": "E75S"
+    },
+    "EC75": {
+      "name": "Airbus Helicopters EC175/H175",
+      "icao": "EC75"
     },
     "E110": {
       "name": "Embraer 110 Bandeirante",
