@@ -4724,5 +4724,13 @@
     "callsign": "TRANSNUSA",
     "country": "Indonesia",
     "active": true
+  },
+  "MMA": {
+    "name": "Myanmar Airways",
+    "icao": "MMA",
+    "iata": "",
+    "callsign": "MYANMAR",
+    "country": "Myanmar",
+    "active": true
   }
 }
