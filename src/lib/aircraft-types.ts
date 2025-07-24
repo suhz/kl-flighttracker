@@ -7,13 +7,10 @@ export interface AircraftType {
 
 interface AircraftTypesDatabase {
   _metadata: {
-    source: string
-    sourceProject: string
-    sourceRepository: string
-    license: string
     description: string
     lastUpdated: string
     totalAircraftTypes: number
+    sources: string
     note: string
   }
   lookup: Record<string, AircraftType>
