@@ -4732,5 +4732,21 @@
     "callsign": "MYANMAR",
     "country": "Myanmar",
     "active": true
+  },
+  "HUSNI": {
+    "name": "Tentera Udara Diraja Malaysia",
+    "icao": "HUSNI",
+    "iata": "",
+    "callsign": "HUSNI",
+    "country": "Malaysia",
+    "active": true
+  },
+  "VJC": {
+    "name": "Vietjet",
+    "icao": "VJC",
+    "iata": "VJ",
+    "callsign": "VIETJET",
+    "country": "Vietnam",
+    "active": true
   }
 }
