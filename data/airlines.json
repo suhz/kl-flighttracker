@@ -4748,5 +4748,25 @@
     "callsign": "VIETJET",
     "country": "Vietnam",
     "active": true
+  },
+  "FD": {
+    "id": 4947,
+    "name": "Thai AirAsia",
+    "alias": "Thai Air Asia",
+    "iata": "FD",
+    "icao": "AIQ",
+    "callsign": "THAI ASIA",
+    "country": "Thailand",
+    "active": true
+  },
+  "AIQ": {
+    "id": 4947,
+    "name": "Thai AirAsia",
+    "alias": "Thai Air Asia",
+    "iata": "FD",
+    "icao": "AIQ",
+    "callsign": "THAI ASIA",
+    "country": "Thailand",
+    "active": true
   }
 }
