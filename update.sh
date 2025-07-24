@@ -97,8 +97,51 @@ rolling_update_service() {
     print_success "✅ $service updated successfully"
 }
 
+# Docker cleanup function (SAFE SYSTEM-WIDE)
+cleanup_docker() {
+    print_status "🧹 Cleaning up Docker resources..."
+    
+    print_status "📊 Docker disk usage before cleanup:"
+    docker system df
+    echo ""
+    
+    # Remove stopped containers
+    print_status "🗑️ Removing stopped containers..."
+    if docker container prune -f | grep -q "deleted"; then
+        print_success "Removed stopped containers"
+    else
+        print_status "No stopped containers to remove"
+    fi
+    
+    # Remove all unused images (your suggestion!)
+    print_status "🗑️ Removing all unused images..."
+    if docker image prune -a -f | grep -q "deleted"; then
+        print_success "Removed unused images"
+    else
+        print_status "No unused images to remove"
+    fi
+    
+    # Clean build cache
+    print_status "🗑️ Cleaning build cache..."
+    if docker builder prune -f | grep -q "deleted"; then
+        print_success "Cleaned build cache"
+    else
+        print_status "No build cache to clean"
+    fi
+    
+    # Show disk usage after cleanup
+    echo ""
+    print_status "📊 Docker disk usage after cleanup:"
+    docker system df
+    
+    print_success "✅ Docker cleanup completed!"
+    print_status "ℹ️  Removed all unused images and containers (keeps active ones)"
+}
+
 # Update all services with zero downtime
 zero_downtime_update() {
+    local skip_cleanup=${1:-false}
+    
     print_status "Starting zero-downtime rolling update..."
     
     # Update services in order (collector first, then dashboard)
@@ -111,8 +154,15 @@ zero_downtime_update() {
     rolling_update_service "dashboard"
     
     # Clean up any orphaned containers
-    print_status "🧹 Cleaning up..."
+    print_status "🧹 Cleaning up orphaned containers..."
     docker compose up -d --remove-orphans
+    
+    # Clean up Docker resources (unless skipped)
+    if [ "$skip_cleanup" != "true" ]; then
+        cleanup_docker
+    else
+        print_status "⏭️ Skipping Docker cleanup (--no-cleanup specified)"
+    fi
     
     print_success "🎉 Zero-downtime update completed!"
 }
@@ -169,11 +219,16 @@ emergency_fallback() {
     docker compose down
     docker compose up -d --build
     
+    # Clean up after emergency fallback
+    cleanup_docker
+    
     print_warning "Emergency fallback completed with brief downtime"
 }
 
 # Main update function
 main() {
+    local skip_cleanup=${1:-false}
+    
     echo ""
     print_status "Starting zero-downtime update process..."
     
@@ -182,7 +237,7 @@ main() {
     
     check_running
     update_code
-    zero_downtime_update
+    zero_downtime_update "$skip_cleanup"
     verify_airlines
     show_status
 }
@@ -192,7 +247,9 @@ show_usage() {
     echo "Usage: $0 [option]"
     echo ""
     echo "Options:"
-    echo "  (no option)     - Zero-downtime rolling update (default)"
+    echo "  (no option)     - Zero-downtime rolling update with cleanup (default)"
+    echo "  --no-cleanup    - Zero-downtime update without Docker cleanup"
+    echo "  --cleanup-only  - Only run Docker cleanup (no update)"
     echo "  --emergency     - Emergency fallback with brief downtime"
     echo "  --help, -h      - Show this help message"
     echo ""
@@ -200,13 +257,28 @@ show_usage() {
     echo "  • Updates services one at a time"
     echo "  • Maintains service availability"
     echo "  • Performs health checks"
+    echo "  • Cleans up old Docker images/containers"
     echo ""
-    echo "Emergency fallback only if zero-downtime fails."
+    echo "Docker cleanup removes:"
+    echo "  • All stopped containers"
+    echo "  • All unused images (docker image prune -a)"
+    echo "  • Build cache"
+    echo ""
+    echo "⚠️  Keeps all active/running containers and their images"
     echo ""
 }
 
 # Handle command line arguments
 case "${1:-}" in
+    "--no-cleanup")
+        print_status "🚀 Starting zero-downtime update (skipping Docker cleanup)"
+        main "true"
+        ;;
+    "--cleanup-only")
+        print_status "🧹 Running Docker cleanup only..."
+        cleanup_docker
+        print_success "✅ Docker cleanup completed!"
+        ;;
     "--emergency")
         print_warning "⚠️ Running emergency fallback update (with downtime)..."
         emergency_fallback
@@ -216,8 +288,8 @@ case "${1:-}" in
         exit 0
         ;;
     "")
-        print_status "🚀 Starting zero-downtime update (default method)"
-        main "$@"
+        print_status "🚀 Starting zero-downtime update with automatic cleanup (default method)"
+        main "false"
         ;;
     *)
         print_warning "Unknown option: $1"
