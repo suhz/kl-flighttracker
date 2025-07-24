@@ -1,13 +1,10 @@
 {
   "_metadata": {
-    "source": "https://raw.githubusercontent.com/mmp/vice/refs/heads/master/resources/openscope-aircraft.json",
-    "sourceProject": "VICE (Visual ICAO Enhancement) - OpenScope Aircraft Database",
-    "sourceRepository": "https://github.com/mmp/vice",
-    "license": "GPL-3.0",
-    "description": "Aircraft type database with ICAO codes and names",
+    "description": "Curated aircraft type database with ICAO codes and names",
     "lastUpdated": "2025-07-24",
     "totalAircraftTypes": 331,
-    "note": "This database contains aircraft type mappings extracted from the VICE project. Only 'name' and 'icao' fields are used from the original comprehensive dataset."
+    "sources": "Originally based on VICE project data with additional curated entries",
+    "note": "This is a curated database combining aircraft types from multiple sources for ADS-B dashboard use."
   },
   "lookup": {
     "AC50": {

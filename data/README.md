@@ -93,14 +93,14 @@ Government aircraft use special callsigns and are mapped accordingly:
 
 # Aircraft Types Database
 
-The `aircraft-types.json` file contains aircraft type mappings from ICAO codes to full aircraft names.
+The `aircraft-types.json` file contains curated aircraft type mappings from ICAO codes to full aircraft names.
 
 ## Source & Attribution
 
-- **Source**: [VICE (Visual ICAO Enhancement) Project](https://github.com/mmp/vice)
-- **Data URL**: https://raw.githubusercontent.com/mmp/vice/refs/heads/master/resources/openscope-aircraft.json
-- **License**: GPL-3.0
-- **Project**: OpenScope Aircraft Database from the VICE project
+This is a curated database combining aircraft types from multiple sources:
+- **Primary source**: Originally based on VICE (Visual ICAO Enhancement) Project data
+- **Additional entries**: Manually curated for ADS-B dashboard use
+- **Maintenance**: Updated as needed for dashboard requirements
 
 ## Format
 
@@ -109,19 +109,18 @@ The file contains metadata and a lookup object:
 ```json
 {
   "_metadata": {
-    "source": "https://raw.githubusercontent.com/mmp/vice/refs/heads/master/resources/openscope-aircraft.json",
-    "sourceProject": "VICE (Visual ICAO Enhancement) - OpenScope Aircraft Database", 
-    "license": "GPL-3.0",
-    "totalAircraftTypes": 325
+    "description": "Curated aircraft type database with ICAO codes and names",
+    "totalAircraftTypes": 331,
+    "sources": "Originally based on VICE project data with additional curated entries"
   },
   "lookup": {
     "B738": {
       "name": "Boeing 737-800",
       "icao": "B738"
     },
-    "A320": {
-      "name": "Airbus A320",
-      "icao": "A320"
+    "A400": {
+      "name": "Airbus A400M Atlas",
+      "icao": "A400"
     }
   }
 }
@@ -133,19 +132,20 @@ The aircraft types database automatically maps ICAO aircraft type codes to reada
 
 - `B738` → "Boeing 737-800"
 - `A320` → "Airbus A320" 
-- `A388` → "Airbus A380-800"
+- `A400` → "Airbus A400M Atlas"
+- `A139` → "AgustaWestland AW139"
 
 ## Updating
 
 To update the aircraft types database:
 
-1. Download the latest data from the source URL
-2. Extract only the `name` and `icao` fields
-3. Update the metadata with the new date
-4. Maintain the GPL-3.0 license attribution
+1. Add new entries directly to the `lookup` object
+2. Update the `totalAircraftTypes` count in metadata
+3. Update the `lastUpdated` field
+4. Commit changes to maintain version history
 
 ## Stats
 
-- **Current entries**: 325 aircraft types
-- **File size**: ~67KB
+- **Current entries**: 331 aircraft types
+- **File size**: ~69KB
 - **Last updated**: 2025-07-24 
