@@ -21018,5 +21018,35 @@
     "callsign": "SUPERGREEN",
     "country": "Indonesia",
     "active": true
+  },
+  "SJV": {
+    "id": 60020,
+    "name": "Super Air Jet",
+    "alias": "",
+    "iata": "IU",
+    "icao": "SJV",
+    "callsign": "SUPER JET",
+    "country": "Indonesia",
+    "active": true
+  },
+  "IU": {
+    "id": 60120,
+    "name": "Super Air Jet",
+    "alias": "",
+    "iata": "IU",
+    "icao": "SJV",
+    "callsign": "SUPER JET",
+    "country": "Indonesia",
+    "active": true
+  },
+  "RMF": {
+    "id": 60021,
+    "name": "Angkatan Tentera Malaysia (ATM)",
+    "alias": "",
+    "iata": "",
+    "icao": "RMF",
+    "callsign": "ARMY AIR",
+    "country": "Malaysia",
+    "active": true
   }
 }
