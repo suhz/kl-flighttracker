@@ -65,7 +65,7 @@ class AircraftCollector {
         aircraftWithPos: stats.aircraft_with_pos,
         aircraftWithoutPos: stats.aircraft_without_pos,
         messagesTotal: stats.last1min?.messages || 0,
-        maxDistance: stats.total?.max_distance || 0,
+        maxDistance: stats.total?.max_distance ? stats.total.max_distance * 1.852 : 0, // Convert nautical miles to km
         snapshotAt: new Date(stats.now * 1000)
       }
     });
@@ -87,7 +87,7 @@ class AircraftCollector {
         altitude: aircraft.alt_baro || null,
         groundSpeed: aircraft.gs || null,
         track: aircraft.track || null,
-        distance: aircraft.r_dst || null,
+        distance: aircraft.r_dst ? aircraft.r_dst * 1.852 : null, // Convert nautical miles to km
         rssi: aircraft.rssi || null,
         lat: aircraft.lat || null,
         lon: aircraft.lon || null,

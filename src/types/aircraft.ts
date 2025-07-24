@@ -11,7 +11,7 @@ export interface Aircraft {
   track?: number;
   lat?: number;
   lon?: number;
-  r_dst?: number; // distance from receiver
+  r_dst?: number; // distance from receiver (nautical miles)
   squawk?: string;
   category?: string;
   messages?: number;

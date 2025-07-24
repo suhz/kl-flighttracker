@@ -19,7 +19,7 @@ model AircraftSighting {
   altitude     Int?     // Altitude in feet
   groundSpeed  Float?   // Ground speed
   track        Float?   // Aircraft heading/track in degrees
-  distance     Float?   // Distance from receiver (km)
+  distance     Float?   // Distance from receiver (km) - converted from nautical miles
   rssi         Float?   // Signal strength
   lat          Float?   // Latitude
   lon          Float?   // Longitude
