@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { AircraftMap } from './AircraftMap'
 import { fetchCurrentAircraft } from '@/lib/api-client'
+import { getAircraftTypeName } from '@/lib/aircraft-types'
 
 export interface CurrentAircraftData {
   hex: string
@@ -177,7 +178,7 @@ export function CurrentAircraft() {
                       {plane.registration || '-'}
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                      {plane.aircraftType || '-'}
+                      {plane.aircraftType ? getAircraftTypeName(plane.aircraftType) : '-'}
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                       <span className="flex items-center">

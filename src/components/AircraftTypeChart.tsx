@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTimeRange } from '@/contexts/TimeRangeContext'
 import { fetchAircraftTypes } from '@/lib/api-client'
+import { getAircraftTypeName, hasAircraftType } from '@/lib/aircraft-types'
 
 interface AircraftTypeData {
   aircraftType: string;
@@ -74,9 +75,18 @@ export function AircraftTypeChart() {
         <div>
           {displayedData.map((item, index) => (
             <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 min-h-[32px]">
-              <div className="flex items-center">
+              <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-6">{index + 1}</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">{item.aircraftType || 'Unknown'}</span>
+                <div className="flex items-center gap-2">
+                  {item.aircraftType && hasAircraftType(item.aircraftType) && (
+                    <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 w-10">
+                      {item.aircraftType}
+                    </span>
+                  )}
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    {item.aircraftType ? getAircraftTypeName(item.aircraftType) : 'Unknown'}
+                  </span>
+                </div>
               </div>
               <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{item.count}</span>
             </div>
