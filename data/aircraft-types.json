@@ -6,7 +6,7 @@
     "license": "GPL-3.0",
     "description": "Aircraft type database with ICAO codes and names",
     "lastUpdated": "2025-07-24",
-    "totalAircraftTypes": 325,
+    "totalAircraftTypes": 331,
     "note": "This database contains aircraft type mappings extracted from the VICE project. Only 'name' and 'icao' fields are used from the original comprehensive dataset."
   },
   "lookup": {
@@ -1309,6 +1309,30 @@
     "R135": {
       "name": "Boeing RC-135",
       "icao": "R135"
+    },
+    "A400": {
+      "name": "Airbus A400M Atlas",
+      "icao": "A400"
+    },
+    "A189": {
+      "name": "AgustaWestland AW189",
+      "icao": "A189"
+    },
+    "A139": {
+      "name": "AgustaWestland AW139",
+      "icao": "A139"
+    },
+    "R66": {
+      "name": "Robinson R-66",
+      "icao": "R66"
+    },
+    "AJ27": {
+      "name": "Avro RJ27",
+      "icao": "AJ27"
+    },
+    "AS50": {
+      "name": "Eurocopter AS350 Ecureuil",
+      "icao": "AS50"
     }
   }
 }
